@@ -1,0 +1,187 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: odoo-run [-p <odoo_root>] [-b <branch_name>] [-v <version>] [-d <mod_dirs>] [-P <py_ver>] [-s] [-D] [-c] [-i] [-S] [-M] [-h]"
+    echo ""
+    echo "Options:"
+    echo "  -p <odoo_root>      Path to odoo root directory (default: ~/Documents/odoo)"
+    echo "  -v <version>        Odoo version to init (example: 16.0)"
+    echo "  -H <db_host>        Database host (default: localhost)"
+    echo "  -m <module_name>    Module name to run (default: base)"
+    echo "  -d <mod_dirs>       Additionnal module directories (default: [])"
+    echo "  -P <py_ver>         Python version (default: System wide python3)"
+    echo "  -t <test_tags>      Test tags (default: [])"
+    echo "  -T                  Enable tests (default: false)"
+    echo "  -D                  Drop database (default: false)"
+    echo "  -c                  Enable community version (default: false)"
+    echo "  -s                  Odoo shell (default: false)"
+    echo "  -S                  Enable security branches (default: false)"
+    echo "  -i                  Init a new database (default: false)"
+    echo "  -M                  Module selector (default: false)"
+    echo "  -h                  Show this help message and exit"
+}
+
+version=""
+py_ver=""
+test_tags=""
+odoo_root="$HOME/Documents/odoo"
+odoo_dir="odoo"
+db_host="localhost"
+
+test_enable=false
+shell=false
+module_selector=false
+init=false
+drop_db=false
+community=false
+security=false
+
+to_install=()
+mod_dirs=()
+
+while getopts ":p:P:v:m:d:cSiMhDsT" opt; do
+    case $opt in
+        p)
+            odoo_root=$OPTARG
+            ;;
+        v)
+            version=$OPTARG
+            ;;
+        m)
+            module_name=$OPTARG
+            ;;
+        M)
+            module_selector=true
+            ;;
+        h)
+            usage
+            exit 0
+            ;;
+        i)
+            init=true
+            ;;
+        H)
+            db_host=$OPTARG
+            ;;
+        S)
+            security=true
+            ;;
+        c)
+            community=true
+            ;;
+        d)
+            mod_dirs+=($OPTARG)
+            ;;
+        D)
+            drop_db=true
+            ;;
+        P)
+            py_ver=$OPTARG
+            ;;
+        s)
+            shell=true
+            ;;
+        T)
+            test_enable=true
+            ;;
+        t)
+            test_tags=$OPTARG
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            usage
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+
+shift $((OPTIND-1))
+
+if [ -z "$version" ]; then
+    echo "Version is required"
+    usage
+    exit 1
+fi
+
+if [ $security = true ]; then 
+    odoo_dir="odoo-security"
+fi
+
+if [ $security = true ] && [ $community = false ]; then 
+    add_dirs+=($odoo_root/$version/enterprise-security)
+elif [ $community = false ]; then
+    add_dirs+=($odoo_root/$version/enterprise)
+fi
+
+
+add_dirs+=($odoo_root/$version/$odoo_dir/addons)
+
+odoo_flags=(
+    "--addons=$(echo ${add_dirs[@]} | tr ' ' ',')" 
+    "--db_host=$db_host" 
+    "--dev=all"
+    "-d odoo-$version"
+)
+
+if [ ! -d "$odoo_root/$version" ]; then
+    echo "Version $version not found"
+    usage
+    exit 1
+fi
+
+if [ ! -v $py_ver ]; then 
+    eval "$(pyenv init -)"
+    pyenv activate odoo-$version
+else
+    source ~/.env/odoo-$version/bin/activate
+fi
+
+if [ ! -z $test_tags ]; then
+    odoo_flags+=("--test-tags=$test_tags")
+fi
+
+if [ $test_enable = true ]; then
+    odoo_flags+=("--test-enable")
+fi
+
+if [ $init = true ]; then
+    if [ $drop_db = true ]; then
+        psql -c "DROP DATABASE \"odoo-$version\";"
+    fi
+
+    if [ -z "$module_name" ] && [ $module_selector = false ]; then
+        echo "No module provided, defaulting to base."
+    fi
+
+    if [ $module_selector = true ]; then
+        mods=$(cat $odoo_root/$version/.cache)
+        to_install=$(echo -e $mods | fzf -m --preview 'echo {}' --preview-window=right:70%)    
+    fi
+
+    if [ ! -z $module_name ]; then
+        to_install=($module_name)
+    fi
+
+    odoo_flags+=("-i base,$(echo ${to_install[@]} | tr ' ' ',')")
+
+    if [ $shell = true ]; then 
+        $odoo_root/$version/$odoo_dir/odoo-bin ${odoo_flags[@]} --stop-after-init
+        unset 'arr[${#arr[@]}-1]'
+        $odoo_root/$version/$odoo_dir/odoo-bin shell ${odoo_flags[@]}
+    else
+        $odoo_root/$version/$odoo_dir/odoo-bin ${odoo_flags[@]}
+    fi
+
+else
+    if [ $shell = true ]; then 
+        $odoo_root/$version/$odoo_dir/odoo-bin shell ${odoo_flags[@]}
+    else
+        $odoo_root/$version/$odoo_dir/odoo-bin ${odoo_flags[@]}
+    fi
+fi

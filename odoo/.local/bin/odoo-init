@@ -1,0 +1,155 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: odoo-init [-p <odoo_root>] [-b <branch_name>] [-v <version>] [-P <py_ver>] [-S] [-h]"
+    echo ""
+    echo "Options:"
+    echo "  -p <odoo_root>      Path to odoo root directory (default: ~/Documents/odoo)"
+    echo "  -P <py_ver>         Python version (default: System wide python3)"
+    echo "  -b <branch_name>    Branch name (default: master)"
+    echo "  -v <version>        Odoo version to init (example: 16.0)"
+    echo "  -S                  Enable security branches (default: false)"
+    echo "  -h                  Show this help message and exit"
+}
+
+py_ver=""
+version=""
+odoo_root="$HOME/Documents/odoo"
+branch_name="master"
+security_branches=false
+
+dirs=("enterprise" "odoo")
+
+while getopts ":p:b:v:P:Sh" opt; do
+    case $opt in
+        p)
+            odoo_root=$OPTARG
+            ;;
+        b)
+            branch_name=$OPTARG
+            ;;
+        v)
+            version=$OPTARG
+            ;;
+        S)
+            security_branches=true
+            ;;
+        P)
+            py_ver=$OPTARG
+            ;;
+        h)
+            usage
+            exit 0
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            usage
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+if [ -z "$version" ]; then
+    echo "Version is required"
+    usage
+    exit 1
+fi
+
+if [ -d "$odoo_root/$version" ]; then
+    if [ ! -z $py_ver ] && [ ! -d ~/.env/odoo-$ver-$pyver ]; then
+        eval "$(pyenv init -)"
+        if [ ! -d ~/.pyenv/versions/$pyver ]; then
+            pyenv install $py_ver
+        fi
+        pyenv virtualenv $py_ver odoo-$version
+        pyenv activate odoo-$version
+        pip install -r "$odoo_root/$version/odoo/requirements.txt"
+    fi
+    echo "Odoo $version already initialized"
+    exit 1
+fi
+
+if [ ! -d "$HOME/.env" ]; then 
+    mkdir $HOME/.env
+fi
+
+mkdir -p "$odoo_root/$version"
+
+# Yup, this script was made with love by and for the security team <3
+if [ $security_branches = true ]; then
+    dirs+=("odoo-security" "enterprise-security")
+fi
+
+for dir in "${dirs[@]}"; do
+    git -C "$odoo_root/$branch_name/$dir" worktree add "$odoo_root/$version/$dir" "$version" || exit 1
+done
+
+echo "Creating python virtual environment"
+
+if [ ! -z $py_ver ]; then
+    eval "$(pyenv init -)"
+    if [ ! -d ~/.pyenv/versions/$pyver ]; then
+        pyenv install $py_ver
+    fi
+
+    pyenv virtualenv $py_ver odoo-$version
+    pyenv activate odoo-$version
+    pip install -r "$odoo_root/$version/odoo/requirements.txt"
+fi
+
+python3 -m venv ~/.env/odoo-$version
+~/.env/odoo-$version/bin/python -m pip install -r "$odoo_root/$version/odoo/requirements.txt"
+
+echo "Caching module lists"
+mods=$(grep -rnw $odoo_root/$version -e "'application': True" | cut -d : -f 1)
+
+for mod in $mods; do
+    app_name=$(cat $mod | grep -e "'name':" | cut -d : -f 2 | sed 's/,//g' | sed "s/'//g" | xargs)
+    app_id=$(basename $(dirname $mod))
+    echo "$app_name,$app_id\n" >> $odoo_root/$version/.cache
+done
+
+cat << EOF > $odoo_root/$version/workspace.code-workspace
+{
+    "folders": [
+        {
+            "name": "Odoo $version",
+            "path": "$odoo_root/$version/odoo",
+        },
+        {
+            "name": "Odoo Enterprise $version",
+            "path": "$odoo_root/$version/enterprise",
+        }
+    ],
+	"settings": {
+		"python.defaultInterpreterPath": "~/.env/odoo-$version/bin/python3",
+	}
+}
+EOF
+
+if [ $security_branches = true ]; then 
+    cat << EOF > $odoo_root/$version/workspace-secu.code-workspace
+{
+    "folders": [
+        {
+            "name": "Odoo $version",
+            "path": "$odoo_root/$version/odoo-security",
+        },
+        {
+            "name": "Odoo Enterprise $version",
+            "path": "$odoo_root/$version/enterprise-security",
+        }
+    ],
+    "settings": {
+    	"python.defaultInterpreterPath": "~/.env/odoo-$version/bin/python3",
+    }
+}
+EOF
+fi

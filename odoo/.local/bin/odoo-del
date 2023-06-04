@@ -1,0 +1,73 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: odoo-del [-p <odoo_root>] [-b <branch_name>] [-v <version>] [-h]"
+    echo ""
+    echo "Options:"
+    echo "  -p <odoo_root>      Path to odoo root directory (default: ~/Documents/odoo)"
+    echo "  -v <version>        Odoo version to init (example: 16.0)"
+    echo "  -b <branch_name>    Branch name (default: master)"
+    echo "  -h                  Show this help message and exit"
+}
+
+version=""
+odoo_root="$HOME/Documents/odoo"
+branch_name="master"
+
+while getopts ":p:v:h" opt; do
+    case $opt in
+        p)
+            odoo_root=$OPTARG
+            ;;
+        v)
+            version=$OPTARG
+            ;;
+        h)
+            usage
+            exit 0
+            ;;
+
+        b)
+            branch_name=$OPTARG
+            ;;
+
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            usage
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+if [ -z "$version" ]; then
+    echo "Version is required"
+    usage
+    exit 1
+fi
+
+if [ ! -d "$odoo_root/$version" ]; then
+    echo "Version $version not found"
+    usage
+    exit 1
+fi
+
+echo "Deleting $odoo_root/$version"
+
+for dir in $(ls $odoo_root/$version); do
+    echo "Deleting $odoo_root/$version/$dir"
+    rm -rf $odoo_root/$version/$dir
+    git -C $odoo_root/$branch_name/$dir worktree prune
+done
+
+rm -r ~/.env/odoo-$version
+rm $odoo_root/$version/.cache
+rm $odoo_root/$version/workspace*
+rmdir $odoo_root/$version
+psql -c "DROP DATABASE \"odoo-$version\";" || exit 0

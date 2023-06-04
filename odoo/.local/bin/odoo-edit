@@ -1,0 +1,64 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: odoo-edit [-p <odoo_root>] [-v <version>] [-h] [-S]"
+    echo ""
+    echo "Options:"
+    echo "  -p <odoo_root>      Path to odoo root directory (default: ~/Documents/odoo)"
+    echo "  -v <version>        Odoo version to init (example: 16.0)"
+    echo "  -S                  Enable security branches (default: false)"
+    echo "  -h                  Show this help message and exit"
+}
+
+version=""
+odoo_root="$HOME/Documents/odoo"
+security_branches=false
+
+while getopts ":p:v:Sh" opt; do
+    case $opt in
+        p)
+            odoo_root=$OPTARG
+            ;;
+        v)
+            version=$OPTARG
+            ;;
+        S)
+            security_branches=true
+            ;;
+        h)
+            usage
+            exit 0
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            usage
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+if [ -z "$version" ]; then
+    echo "Version is required"
+    usage
+    exit 1
+fi
+
+if [ ! -d "$odoo_root/$version" ]; then
+    echo "Version $version not found"
+    usage
+    exit 1
+fi
+
+if [ $security_branches = true ]; then 
+    code $odoo_root/$version/workspace-secu.code-workspace
+else
+    code $odoo_root/$version/workspace.code-workspace
+fi
+
