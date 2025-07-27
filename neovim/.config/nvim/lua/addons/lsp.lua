@@ -1,26 +1,15 @@
-return {
-    "neovim/nvim-lspconfig",
+vim.lsp.enable({
+    'lua_ls',
+    'clangd',
+    'pyright',
+    'zls',
+    'gopls',
+})
 
-    dependencies = {
-        {
-            "folke/lazydev.nvim",
-            ft = "lua", -- only load on lua files
-            opts = {
-                library = {
-                    -- See the configuration section for more details
-                    -- Load luvit types when the `vim.uv` word is found
-                    { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-                },
-            },
-        }
-    },
+vim.keymap.set("n", "<leader>i", vim.lsp.buf.hover)
 
-    config = function()
-        vim.lsp.enable('lua_ls')
-        vim.lsp.enable('clangd')
-        vim.lsp.enable('pyright')
-        vim.lsp.enable('rust_analyzer')
-        vim.lsp.enable('metals')
-        vim.lsp.enable('zls')
-    end
-}
+vim.api.nvim_create_autocmd('BufWritePre', {
+    callback = function()
+        vim.lsp.buf.format({ async = false })
+    end,
+})

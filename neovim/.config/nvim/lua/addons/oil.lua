@@ -1,9 +1,7 @@
-return {
-  "stevearc/oil.nvim",
-  opts = {
+require("oil").setup({
     view_options = {
-      show_hidden = true,
-    },
-  },
-  dependencies = { { "echasnovski/mini.icons", opts = {} } },
-}
+        show_hidden = true,
+    }
+})
+
+vim.keymap.set("n", "-", ":Oil<CR>")
