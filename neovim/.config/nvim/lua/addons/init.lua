@@ -24,3 +24,8 @@ for _, addon in pairs(addons_content) do
         require("addons." .. name)
     end
 end
+
+vim.api.nvim_create_user_command("PackUpdate", function()
+    vim.pack.update()
+    vim.cmd "write"
+end, {})
