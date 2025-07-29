@@ -1,10 +1,6 @@
 local function get_links(content)
     local links = {}
-    for link in string.gmatch(content, "https?://[^%s'\"]+") do
-        if link:sub(-1) == "." then
-            link = link:sub(1, -2)
-        end
-
+    for link in string.gmatch(content, "https?://[%w%-%._~:/%?#@!$&%'%(%)%*%+,%%=]*[%w%/_~#=]") do
         table.insert(links, link)
     end
 
@@ -41,6 +37,7 @@ local function open_link()
 
     if content:len() > 0 then
         local links = get_links(content)
+        print(vim.inspect(links))
 
         if #links > 0 then
             open_picker(links)
