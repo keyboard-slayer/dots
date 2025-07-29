@@ -1,6 +1,10 @@
 local function get_links(content)
     local links = {}
     for link in string.gmatch(content, "https?://[^%s'\"]+") do
+        if link:sub(-1) == "." then
+            link = link:sub(1, -2)
+        end
+
         table.insert(links, link)
     end
 
