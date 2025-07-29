@@ -3,14 +3,11 @@ vim.pack.add({
     "https://github.com/catppuccin/nvim",
     "https://github.com/folke/flash.nvim",
     "https://github.com/nvim-lualine/lualine.nvim",
-    "https://github.com/echasnovski/mini.icons",
-    "https://github.com/echasnovski/mini.pairs",
+    "https://github.com/echasnovski/mini.nvim",
     "https://github.com/stevearc/oil.nvim",
     "https://github.com/nvim-treesitter/nvim-treesitter-context",
     "https://github.com/nvim-treesitter/nvim-treesitter",
-    "https://github.com/nvim-lua/plenary.nvim",
     "https://github.com/nvim-tree/nvim-web-devicons",
-    "https://github.com/nvim-telescope/telescope.nvim",
     {src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1.0")},
 })
 
