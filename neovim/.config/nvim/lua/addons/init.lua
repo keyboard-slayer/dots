@@ -8,7 +8,8 @@ vim.pack.add({
     "https://github.com/nvim-treesitter/nvim-treesitter-context",
     "https://github.com/nvim-treesitter/nvim-treesitter",
     "https://github.com/nvim-tree/nvim-web-devicons",
-    {src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1.0")},
+    "https://github.com/folke/lazydev.nvim",
+    { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1.0") },
 })
 
 local addons_pattern = vim.fs.joinpath(vim.fn.stdpath('config'), 'lua', 'addons', '*.lua')
