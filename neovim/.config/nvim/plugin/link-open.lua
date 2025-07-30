@@ -22,8 +22,9 @@ local function open_picker(links)
         MiniPick.start({
             source = {
                 items = links,
+                name = "Open link",
                 choose = function(item)
-                    vim.fn.jobstart(command .. item)
+                    vim.fn.jobstart(command .. item, { detach = true })
                 end
             }
         })
@@ -37,7 +38,6 @@ local function open_link()
 
     if content:len() > 0 then
         local links = get_links(content)
-        print(vim.inspect(links))
 
         if #links > 0 then
             open_picker(links)
