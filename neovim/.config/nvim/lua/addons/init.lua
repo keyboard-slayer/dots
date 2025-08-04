@@ -6,9 +6,9 @@ vim.pack.add({
     "https://github.com/echasnovski/mini.nvim",
     "https://github.com/stevearc/oil.nvim",
     "https://github.com/nvim-treesitter/nvim-treesitter-context",
-    "https://github.com/nvim-treesitter/nvim-treesitter",
     "https://github.com/nvim-tree/nvim-web-devicons",
     "https://github.com/folke/lazydev.nvim",
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter", version="master" },
     { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1.0") },
 })
 
@@ -23,7 +23,3 @@ for _, addon in pairs(addons_content) do
     end
 end
 
-vim.api.nvim_create_user_command("PackUpdate", function()
-    vim.pack.update()
-    vim.cmd "write"
-end, {})
