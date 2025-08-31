@@ -1,0 +1,88 @@
+#+TITLE: Keyb's Emacs configuration
+#+AUTHOR: Jordan D.
+#+EMAIL: contact@keyb.moe
+
+* Builtin Configs
+** Core settings
+#+BEGIN_SRC elisp
+  (setq inhibit-startup-message t
+        auto-save-default nil
+        make-backup-files nil
+        large-file-warning-threshold nil
+        vc-follow-symlinks t
+        ad-redefinition-action 'accept
+        native-comp-async-report-warnings-errors nil)
+
+  (repeat-mode 1)
+  (display-time-mode 1) 
+  (column-number-mode 1) 
+  
+#+END_SRC
+** Install and Enable use-package
+#+BEGIN_SRC elisp
+  (require 'package)
+  (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  (package-initialize)
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (eval-and-compile
+    (setq use-package-always-ensure t
+          use-package-expand-minimally t))
+#+END_SRC
+** Make it look pretty
+*** Declutter the UI
+#+BEGIN_SRC elisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (setq ring-bell-function 'ignore)
+#+END_SRC
+*** Change the font
+#+BEGIN_SRC elisp
+  (set-frame-font "NeoSpleen Nerd Font 16" nil t)
+#+END_SRC
+* Third Party Packages
+** Evil Mode
+#+BEGIN_SRC elisp
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-want-integration t
+  	evil-want-keybinding nil
+  	evil-want-C-u-scroll t
+  	evil-want-C-i-jump nil
+  	respect-visual-line-mode t
+  	evil-undo-system 'undo-tree)
+    :config
+    (evil-mode 1))
+#+END_SRC
+** Catppuccin
+#+BEGIN_SRC elisp
+  (use-package catppuccin-theme
+    :ensure t
+    :init
+    (load-theme 'catppuccin :no-confirm))
+#+END_SRC
+** Doom modeline
+#+BEGIN_SRC elisp
+    (use-package doom-modeline
+      :ensure t
+      :config
+      (setq doom-modeline-buffer-file-name-style 'auto
+    	doom-modeline-major-mode-icon t
+    	doom-modeline-major-mode-color-icon t
+    	doom-modeline-vcs-max-length 12
+    	doom-modeline-number-limit 99
+        doom-modeline-lsp t)
+      :init
+      (doom-modeline-mode 1))
+#+END_SRC
+** Rainbow Delimiter
+#+BEGIN_SRC elisp
+    (use-package rainbow-delimiters
+	:hook (prog-mode . rainbow-delimiters-mode))
+#+END_SRC
+
