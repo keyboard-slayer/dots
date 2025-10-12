@@ -84,4 +84,4 @@ eval "$(fzf --zsh)"
 
 # --------- Env vars ---------------------
 
-export PATH=$PATH:/opt/homebrew/opt/llvm/bin
+export PATH=$PATH:~/.local/bin
