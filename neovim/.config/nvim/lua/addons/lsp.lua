@@ -1,3 +1,7 @@
+vim.lsp.config('clangd', {
+    cmd = { 'clangd', '--experimental-modules-support' }
+})
+
 vim.lsp.enable({
     'lua_ls',
     'clangd',
