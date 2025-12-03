@@ -57,6 +57,10 @@
     "telescope.nvim": {
       "rev": "b4da76b",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
+    },
+    "trouble.nvim": {
+      "rev": "bd67efe",
+      "src": "https://github.com/folke/trouble.nvim"
     }
   }
 }

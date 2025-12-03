@@ -11,8 +11,9 @@ vim.pack.add({
     "https://github.com/nvim-lua/plenary.nvim",
     "https://github.com/nvim-telescope/telescope.nvim",
     "https://github.com/github/copilot.vim",
-    { src = "https://github.com/nvim-treesitter/nvim-treesitter", version="master" },
-    { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1.0") },
+    "https://github.com/folke/trouble.nvim",
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "master" },
+    { src = "https://github.com/Saghen/blink.cmp",                version = vim.version.range("1.0") },
 })
 
 local addons_pattern = vim.fs.joinpath(vim.fn.stdpath('config'), 'lua', 'addons', '*.lua')
@@ -25,4 +26,3 @@ for _, addon in pairs(addons_content) do
         require("addons." .. name)
     end
 end
-

@@ -8,6 +8,9 @@ vim.lsp.enable({
     'pyright',
     'zls',
     'gopls',
+    'metals',
+    'ocamllsp',
+    'hls',
 })
 
 vim.keymap.set("n", "<leader>i", vim.lsp.buf.hover)
