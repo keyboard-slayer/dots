@@ -9,17 +9,37 @@
       "rev": "da369d9",
       "src": "https://github.com/github/copilot.vim"
     },
+    "cord.nvim": {
+      "rev": "7483e9ce335d22a9e52f83804134d621094b5fe7",
+      "src": "https://github.com/vyfor/cord.nvim"
+    },
+    "cutekit.nvim": {
+      "rev": "622d6b9fad774242e4480eac939ac09c90d64950",
+      "src": "file:///Users/jordan/Developer/cutekit.nvim"
+    },
     "flash.nvim": {
       "rev": "2febce6",
       "src": "https://github.com/folke/flash.nvim"
+    },
+    "headlines.nvim": {
+      "rev": "bf17c96a836ea27c0a7a2650ba385a7783ed322e",
+      "src": "https://github.com/lukas-reineke/headlines.nvim"
     },
     "lazydev.nvim": {
       "rev": "e28ce52",
       "src": "https://github.com/folke/lazydev.nvim"
     },
+    "lsp_lines.nvim": {
+      "rev": "a92c755f182b89ea91bd8a6a2227208026f27b4d",
+      "src": "https://git.sr.ht/~whynothugo/lsp_lines.nvim"
+    },
     "lualine.nvim": {
       "rev": "b8c2315",
       "src": "https://github.com/nvim-lualine/lualine.nvim"
+    },
+    "markview.nvim": {
+      "rev": "0a5033326f703d99a8788e2d47753d6298195e8a",
+      "src": "https://github.com/OXY2DEV/markview.nvim"
     },
     "mini.nvim": {
       "rev": "ef89bb1",
@@ -53,6 +73,10 @@
     "plenary.nvim": {
       "rev": "b9fd522",
       "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "strudel.nvim": {
+      "rev": "a6b9752b0084a20c37786b54eef2095bb31daff7",
+      "src": "https://github.com/gruvw/strudel.nvim"
     },
     "telescope.nvim": {
       "rev": "b4da76b",
