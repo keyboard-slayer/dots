@@ -11,3 +11,6 @@ vim.keymap.set({ "n", "v" }, "gh", "g0")
 vim.keymap.set({ "n", "v" }, "gl", "$")
 vim.keymap.set({ "n", "v" }, "<leader>y", '"+y')
 vim.keymap.set({ "n", "v" }, "<leader>p", '"+p')
+
+vim.cmd("packadd nvim.undotree")
+vim.keymap.set("n", "<leader>u", require("undotree").open)

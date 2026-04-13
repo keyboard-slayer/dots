@@ -12,6 +12,7 @@ vim.pack.add({
     "https://github.com/nvim-telescope/telescope.nvim",
     "https://github.com/github/copilot.vim",
     "https://github.com/folke/trouble.nvim",
+    "https://github.com/OXY2DEV/markview.nvim",
     { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "master" },
     { src = "https://github.com/Saghen/blink.cmp",                version = vim.version.range("1.0") },
 })

@@ -1,5 +1,4 @@
 require("mini.icons").setup({})
-require("mini.pairs").setup({})
 require("mini.extra").setup({})
 
 require("mini.pick").setup({

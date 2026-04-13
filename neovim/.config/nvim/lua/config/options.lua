@@ -17,6 +17,7 @@ vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 vim.o.splitright = true
 vim.o.splitbelow = true
+vim.o.cmdheight = 0
 -- vim.o.list = true
 vim.o.inccommand = "nosplit"
 vim.o.cursorline = true
